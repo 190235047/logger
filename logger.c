@@ -163,8 +163,7 @@ ZEND_METHOD(logger, __callStatic)
 {
         char *method;
         int  method_len;
-        zval *argv, **v, *funname, *logstr, *memoryusage;
-        ulong firstIndex;
+        zval *argv, **v, *funname, *logstr;
         HashTable *argvHt;
         zval **param[2];
         if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sa",&method, &method_len, &argv) == FAILURE) {
@@ -180,12 +179,8 @@ ZEND_METHOD(logger, __callStatic)
         ZVAL_STRING(funname, "vsprintf", 1);
         param[0] = v;
         param[1] = &argv;
-        logger_get_file_name();
         call_user_function_ex(EG(function_table), NULL, funname, &logstr, 2, param, 0, NULL TSRMLS_CC);
-        ZVAL_STRING(funname, "memory_get_usage", 1);
-        call_user_function_ex(EG(function_table), NULL, funname, &memoryusage, 0, NULL, 0, NULL TSRMLS_CC);
         write_logger(method, Z_STRVAL_PP(&logstr));
-        RETURN_ZVAL(logstr, 1, 0);
         return;
 }
 
@@ -194,7 +189,6 @@ ZEND_METHOD(logger, init)
         char *app, *path;
         int appLen, pathLen;
         zval *logApp, *logPath;
-        zend_class_entry *ce;
         if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss",&app, &appLen, &path, &pathLen) == FAILURE) {
                 RETURN_NULL();
         }

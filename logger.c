@@ -103,6 +103,40 @@ ZEND_END_ARG_INFO()
 
 zend_class_entry *logger_ce;
 
+char * logger_get_server(char *type, uint len)
+{
+        char *url;
+        zval **carrier = NULL, **ret;
+#if (PHP_MAJOR_VERSION == 5) && (PHP_MINOR_VERSION < 4)
+        zend_bool       jit_initialization = (PG(auto_globals_jit) && !PG(register_globals) && !PG(register_long_arrays));
+#else
+        zend_bool       jit_initialization = PG(auto_globals_jit);
+#endif
+        if (jit_initialization) {
+                zend_is_auto_global(ZEND_STRL("_SERVER") TSRMLS_CC);
+        }
+        //(void)zend_hash_find(&EG(symbol_table), ZEND_STRS("_SERVER"), (void **)&carrier);
+        carrier = &PG(http_globals)[TRACK_VARS_SERVER];
+        if (!carrier || !(*carrier)) {
+                return "";
+        }
+        php_printf("sizeof : %d, str : %s", sizeof(type), type);
+        if (zend_hash_find(Z_ARRVAL_PP(carrier), type, len + 1, (void **)&ret) == FAILURE) {
+                return "";
+        }
+        return Z_STRVAL_PP(ret);
+}
+
+char * logger_get_method()
+{
+        return logger_get_server(ZEND_STRL("REQUEST_METHOD"));
+}
+
+char * logger_get_url()
+{
+        return logger_get_server(ZEND_STRL("REQUEST_URI"));
+}
+
 char * logger_get_file_name()
 {
         char *filename;
@@ -148,12 +182,13 @@ int write_logger(char* level, char *content)
                 efree(allPath);
                 return 0;
         }*/
-        if ((fp = fopen(allPath, "wb")) == NULL){
+        php_printf("asaswe34qqqqqqqqqqqq path:%s", allPath); 
+        if ((fp = fopen(allPath, "a")) == NULL){
                 efree(allPath);
                 return 0;
         }
         sprintf(date, "%d-%d-%d %d:%d:%d", timeinfo->tm_year, timeinfo->tm_mon, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-        fprintf(fp, "[%s][%s][%s][%d] %s\n",level, date, logger_get_file_name(), get_memery_usage(), content);
+        fprintf(fp, "[%s][%s][%s][%d][%s %s] %s\n",level, date, logger_get_file_name(), get_memery_usage(),logger_get_method(), logger_get_url(), content);
         efree(allPath);
         fclose(fp);
         return 1;

@@ -17,6 +17,6 @@ logger::trace("this is my first log");
 [trace][2015-6-15 22:26:9][当前php文件全路径][当前内存使用量] this is my first log
 
 
-使用前请生成path/app_name 路径
+使用前请生成path/app_name 路径，请一定注意日志文件夹得有可写权限
 
-本扩展为本人第一个扩展，以后将不断的完善和加强功能，有一些问题请联系我 Email : yzx753@vip.qq.com
+本扩展刚开始写，以后将不断的完善和加强功能，有一些问题请联系我 Email : yzx753@vip.qq.com

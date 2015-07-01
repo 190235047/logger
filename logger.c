@@ -103,6 +103,44 @@ ZEND_END_ARG_INFO()
 
 zend_class_entry *logger_ce;
 
+int logger_mkdir(char *path)
+{
+        char *tmp, *pos;
+        int  sLen, i;
+        tmp = estrdup(path);
+        pos = tmp;
+        sLen = strlen(path);
+        if (strncmp(pos, "/", 1) == 0) {
+                pos += 1;
+        } else if(strncmp(pos, "./", 2) == 0) {
+                pos += 2;
+        }
+        for (; *pos != '\0'; ++pos) {
+                if (*pos == '/') {
+                        *pos = '\0';
+                        
+                        if (access(tmp, F_OK) == 0) {
+                                *pos = '/';
+                                continue;
+                        }
+                        
+                        if (mkdir(tmp, 0755) != 0) {
+                                free(tmp);
+                                return -1;
+                        }
+                        *pos = '/';
+                }
+        }
+        printf("if %s\n", tmp);
+        if (*(pos - 1) != "/" && access(tmp, F_OK) != 0) {
+                if (mkdir(tmp, 0755) != 0) {
+                        free(tmp);
+                        return -1;
+                }
+        }
+        free(tmp);                                                                                                                                                     
+        return 0;
+}
 char * logger_get_server(char *type, uint len)
 {
         char *url;

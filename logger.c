@@ -131,7 +131,6 @@ int logger_mkdir(char *path)
                         *pos = '/';
                 }
         }
-        printf("if %s\n", tmp);
         if (*(pos - 1) != "/" && access(tmp, F_OK) != 0) {
                 if (mkdir(tmp, 0755) != 0) {
                         free(tmp);
@@ -158,7 +157,7 @@ char * logger_get_server(char *type, uint len)
         if (!carrier || !(*carrier)) {
                 return "";
         }
-        php_printf("sizeof : %d, str : %s", sizeof(type), type);
+        //php_printf("sizeof : %d, str : %s", sizeof(type), type);
         if (zend_hash_find(Z_ARRVAL_PP(carrier), type, len + 1, (void **)&ret) == FAILURE) {
                 return "";
         }
@@ -220,7 +219,7 @@ int write_logger(char* level, char *content)
                 efree(allPath);
                 return 0;
         }*/
-        php_printf("asaswe34qqqqqqqqqqqq path:%s", allPath); 
+        //php_printf("asaswe34qqqqqqqqqqqq path:%s", allPath); 
         if ((fp = fopen(allPath, "a")) == NULL){
                 efree(allPath);
                 return 0;
